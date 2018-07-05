@@ -6,12 +6,24 @@ import minimalmodbus
 from time import sleep
 import numpy as np
 import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 
 minimalmodbus.BAUDRATE = 9600
 ADDRESS = 1
-rs_pin = 15
-GPIO.setup(rs_pin, GPIO.IN)    
+rs1 = 13
+rs2 = 5
+rs3 = 6
+
+GPIO.setup(rs1, GPIO.IN,  pull_up_down=GPIO.PUD_UP)    
+GPIO.setup(rs2, GPIO.IN,  pull_up_down=GPIO.PUD_UP)    
+GPIO.setup(rs3, GPIO.IN,  pull_up_down=GPIO.PUD_UP)    
+
+def first_switch(channel):  
+    print "falling edge detected by rs1"  
+
+GPIO.add_event_detect(rs1, GPIO.FALLING, callback=first_switch, bouncetime=300)  
+GPIO.add_event_detect(rs2, GPIO.FALLING, callback=second_switch, bouncetime=300)  
+GPIO.add_event_detect(rs3, GPIO.FALLING, callback=third_switch, bouncetime=300)  
 
 #minimalmodbus.TIMEOUT=0.5
 #minimalmodbus.CLOSE_PORT_AFTER_EACH_CALL = True
@@ -52,24 +64,25 @@ def rotate(rot, sleepValue=0.1):
 			except IOError as io:
 				print(io)
 
-def readSwitch():
+def readSwitch(rs):
     while True:
-        if GPIO.input(rs_pin):
-           print("Door is open")
-           sleep(10)
-           
-        if GPIO.input(rs_pin) == False:
-           #print("Door is closed")
-           sleep(0.1)
+        if GPIO.input(rs) == 0:
+           print("switching")
+           sleep(0.01)
+
+
 
 #while True:
 def main():
+    sleep(100)
     #rotate(fwd)
-    readSwitch()
+    #readSwitch(rs3)
     #sleep(sleepValue)
     #rotate(-1*fwd)
     #print("finished")
-    motor.write_register(0, 0b0000000000000001, functioncode=6)#stop
+    #motor.write_register(0, 0b0000000000000001, functioncode=6)#stop
+
+
 
 if __name__ == "__main__":
     main()
