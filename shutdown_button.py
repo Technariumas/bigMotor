@@ -1,8 +1,14 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 # example gpiozero code that could be used to have a reboot
 #  and a shutdown function on one GPIO button
 # scruss - 2017-10
+import minimalmodbus
+minimalmodbus.BAUDRATE = 9600
+ADDRESS = 1
+#MODBUS setup
+motor = minimalmodbus.Instrument('/dev/ttyUSB0', slaveaddress=ADDRESS)
+motor.debug=True
 
 use_button=27                       # lowest button on PiTFT+
 
@@ -19,10 +25,13 @@ def rls():
 		check_call(['/sbin/poweroff'])
 		print('shutdown')
 		held_for = 0.0
+		motor.write_register(0, 0b0000000000000110, functioncode=6)#stop#stop
+
 	elif (held_for > 2.0):
 		print('restart')
 		#check_call(['/sbin/reboot'])
-		os.system("sudo systemctl stop motor.service")
+		motor.write_register(0, 0b0000000000000110, functioncode=6)#stop#stop
+		#os.system("sudo systemctl stop motor.service")
 		held_for = 0.0
 	else:
 		held_for = 0.0

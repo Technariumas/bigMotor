@@ -46,7 +46,7 @@ motor = minimalmodbus.Instrument('/dev/ttyUSB0', slaveaddress=ADDRESS)
 
 
 #motor.precalculate_read_size=False
-motor.debug=True
+motor.debug=False
 
 def setSpeed(hz):
     maxSpeed = hz*60
@@ -63,6 +63,20 @@ def setAcc(s):
     accTime = s*100
     motor.write_register(3, accTime, functioncode=6) #akseleravimo laikas, s*100
 
+def down(clickLimit):
+    global clickCounter
+    clickCounter = 0
+    start()
+    print("start")
+    while True:
+        #print(clickCounter)
+        if (clickCounter > clickLimit):
+               print(clickCounter)
+               stop()
+               time.sleep(1)
+               break
+
+
 def rotate(clickLimit):
     global clickCounter
     clickCounter = 0
@@ -73,23 +87,28 @@ def rotate(clickLimit):
         if (clickCounter > clickLimit):
                print(clickCounter)
                stop()
-               time.sleep(2)
+               time.sleep(1)
                break
     
 
 def main():
-    speed = 5
-    setAcc(2) #seconds
-    clickLimit = 100
+    speed = -5
+    setAcc(0.5) #seconds
+    clickLimit = 30
     #while True:
-    for i in range(0, 25):
+    dir = 1
+    #setSpeed(dir*speed) #Hz
+    #setSpeed(speed) #Hz
+
+    #down(clickLimit)
+    for i in range(0, 1):
             setSpeed(speed) #Hz
-            print("fwd")
+            print("fwd", clickCounter)
             rotate(clickLimit)
             setSpeed(-speed) #Hz
             print("back", clickCounter)
             rotate(clickLimit)  
-                
+              
     GPIO.cleanup() # this ensures a clean exit  
 
 if __name__ == "__main__":
