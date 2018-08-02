@@ -142,11 +142,11 @@ def main():
     UP = -1
     DOWN = 1
     direction = UP
-    speed = direction*20 #8
-    setAcc(3) #5
+    speed = direction*12 #8
+    setAcc(5) #5
     #clickLimit = 12
     cycles = 3
-    duration = 6#17
+    duration = 12#17
     time.sleep(1)
     #readSwitches()
     #cycle(clickLimit, speed, cycles)
