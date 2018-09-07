@@ -7,7 +7,7 @@ import minimalmodbus
 minimalmodbus.BAUDRATE = 9600
 ADDRESS = 1
 #MODBUS setup
-motor = minimalmodbus.Instrument('/dev/ttyUSB0', slaveaddress=ADDRESS)
+motor = minimalmodbus.Instrument('/dev/serial/by-id/usb-1a86_5523-if00-port0', slaveaddress=ADDRESS)
 motor.debug=True
 
 use_button=27                       # lowest button on PiTFT+
@@ -22,17 +22,19 @@ held_for=0.0
 def rls():
 	global held_for
 	if (held_for > 5.0):
-		check_call(['/sbin/poweroff'])
+		#check_call(['/sbin/poweroff'])
 		print('shutdown')
 		held_for = 0.0
 		motor.write_register(0, 0b0000000000000110, functioncode=6)#stop#stop
+                check_call(['/sbin/poweroff'])
 
 	elif (held_for > 2.0):
-		print('restart')
+		print('stop motor')
 		#check_call(['/sbin/reboot'])
 		motor.write_register(0, 0b0000000000000110, functioncode=6)#stop#stop
-		#os.system("sudo systemctl stop motor.service")
-		held_for = 0.0
+		os.system("sudo systemctl stop motor.service")
+		print('motor service killed')
+                held_for = 0.0
 	else:
 		held_for = 0.0
 def hld():

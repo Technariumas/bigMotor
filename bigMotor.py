@@ -48,7 +48,7 @@ motor = minimalmodbus.Instrument('/dev/serial/by-id/usb-1a86_5523-if00-port0', s
 
 
 #motor.precalculate_read_size=False
-motor.debug=False
+motor.debug=True
 
 def readSwitches():
     while True:
@@ -142,11 +142,11 @@ def main():
     UP = -1
     DOWN = 1
     direction = UP
-    speed = direction*12 #8
+    speed = direction*8 #8
     setAcc(5) #5
     #clickLimit = 12
     cycles = 3
-    duration = 12#17
+    duration = 17#17
     time.sleep(1)
     #readSwitches()
     #cycle(clickLimit, speed, cycles)
